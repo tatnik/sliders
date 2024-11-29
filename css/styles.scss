@@ -1,0 +1,270 @@
+@use 'sass:math';
+
+$n:4; /* number of Slider1-images */
+$bg-color:#c2CBCE; 
+$accent-color: darkblue;
+$border-width: 15px; 
+
+body{
+  margin: 0;
+  padding: 0;
+}
+
+.sliders {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.slider-wrapper{
+  display: grid;
+  align-content: center;
+  justify-content: center;
+}
+
+.slider{
+  background: $bg-color; 
+  height:300px;
+  box-sizing: border-box;
+
+  &__galery{
+    aspect-ratio: 1;
+    width: 100%;
+    overflow: hidden;
+    box-sizing:border-box;
+    position: relative;
+  }
+}
+
+
+.slide{
+  width: 220px;
+  height: 220px;
+
+  &__title{
+    font-size: 24px;
+    color: $accent-color;
+    margin:0;
+    opacity: 0;
+  }
+}
+
+
+/* SLIDER-1 */
+
+.slider--1{
+  width: 300px;
+  padding:30px;
+
+  & .slider__galery {
+    display: grid;
+    border-radius: 50%;
+    clip-path: circle(49.5%); /* to avoid a few glitch caused by overflow: hidden */
+    padding: 10px;
+  }
+
+  & .slider__galery::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: inherit;
+    border-radius: inherit;
+    box-sizing: content-box;
+    border: $border-width dashed $accent-color;
+  }
+
+  & .slide {
+    grid-area: 1/1;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: inherit;
+    transform-origin: 50% (50%/math.sin(180deg/$n) + 50%);
+    border: $border-width * 2  solid $bg-color;
+    box-sizing: border-box;
+  }
+  
+  & .slider__galery::after,
+  & .slide {
+    animation: circle 10s infinite cubic-bezier(.5,0,.5,1.1);
+  }
+  & .slider__galery::after{
+    animation-direction: reverse;
+  }
+
+  @for $i from 2 to ($n + 1) {
+    & .slide--#{$i} {
+      animation-delay: #{10*(1 - $i)/$n}s;
+    }
+  }
+
+  @keyframes circle {
+    0%,3%    {transform: rotate(0)}
+    98%,100% {transform: rotate(-360deg)}
+    @for $i from 1 to $n  {
+      $pice: math.round($i / $n * 100); 
+      #{$pice - 2}%, #{$pice + 3}% {transform: rotate(#{$pice * -3.6}deg)}  
+    }
+  }
+}
+
+/* SLIDER-2 */
+
+.slider--2 {
+  width: 540px;
+  display: flex;
+  padding: 35px 20px;
+
+
+& .slide {
+  height: 220px;
+  width: 220px;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  flex: 2;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  transition: all 500ms ease-in-out;
+}
+
+& .slide__title{
+  position: absolute;
+  bottom: -30px;
+  left:10px;
+}
+
+& .slide.active{
+  flex:10;
+}
+
+& .slide.active .slide__title{
+  opacity: 1;
+  transition: opacity 0.3s ease-in 0.4s;
+}
+& .slide.hide {
+  display: none;
+}
+
+
+}
+
+/* SLIDER-3 */
+
+.slider--3 {
+  width: 300px;
+  height: 300px;
+  padding: 20px;
+
+
+  & .slider__galery {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  } 
+
+  & .slide__title{
+    font-size: 24px;
+    position: absolute;
+    bottom: 0;
+    left: 1px;
+    color:  $accent-color;
+    opacity: 0;
+  }
+
+  & .slide{
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    opacity: 0; 
+    border-radius: 10px;
+  }
+
+
+  & .radio {
+    visibility: hidden;
+  	position: absolute;
+  }
+
+  & .slider-controls {
+    display: flex;
+    flex-direction:column;
+    justify-content: center;
+    row-gap:8px;
+    position: absolute;
+    top: 1px;
+    right: 5px;
+  }
+
+  & label {
+  	cursor: pointer;
+  	height: 14px;
+  	width: 14px;
+    color: $accent-color;
+    background-color: $bg-color;
+    border: 5px solid $bg-color;
+  	border-radius: 50%;
+    box-shadow: 0 0 0 1px $accent-color;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+  
+  & #radio3-1:checked ~ .slider-controls>label[for="radio3-1"], 
+  & #radio3-2:checked ~ .slider-controls>label[for="radio3-2"],
+  & #radio3-3:checked ~ .slider-controls>label[for="radio3-3"],
+  & #radio3-4:checked ~ .slider-controls>label[for="radio3-4"],
+  & #radio3-5:checked ~ .slider-controls>label[for="radio3-5"]
+  {
+    background-color: $accent-color;
+  }
+
+  
+  & #radio3-1:checked ~ .slide--1,
+  & #radio3-2:checked ~ .slide--2,
+  & #radio3-3:checked ~ .slide--3,
+  & #radio3-4:checked ~ .slide--4,
+  & #radio3-5:checked ~ .slide--5
+  {
+    z-index: 10;
+    animation: scale 2s linear ;
+    animation-fill-mode: forwards;
+  }
+
+  & #radio3-1:checked + .slide__title, 
+  & #radio3-2:checked + .slide__title,
+  & #radio3-3:checked + .slide__title,
+  & #radio3-4:checked + .slide__title,
+  & #radio3-5:checked + .slide__title
+  {
+  	z-index: 10;
+    animation: scale 1s linear 1s;
+    animation-fill-mode: forwards;
+
+  }
+
+  @keyframes scale{
+  0% {
+    transform:scale(0);
+    opacity: 0;
+  }
+  20%{
+    transform:scale(0.2);
+    opacity: 0.2;
+  }
+  80%{
+    transform:scale(0.8);
+    opacity: 0.8;
+  }
+  100%{
+    transform:scale(1);
+    opacity: 1;
+  }
+  }
+
+}
